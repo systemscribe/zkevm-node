@@ -1,0 +1,38 @@
+---
+name: Provision Environment
+
+on: workflow_dispatch
+
+jobs:
+  setup-and-test:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Cloud Environment
+        run: |
+          # Run Terraform script to set up cloud environment
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
+
+          # Run Ansible playbook to configure the environment
+          cd ../ansible
+          ansible-playbook setup.yml
+
+        working-directory: ci-helpers
+
+      - name: Deploy zkEVM on EVM Testnet
+        run: |
+          # Run deployment scripts or commands
+          # ...
+
+        working-directory: ci-helpers
+
+      - name: Terminate Cloud Environment
+        run: |
+          # Run Terraform script to tear down the cloud environment
+          cd terraform
+          terraform destroy -auto-approve
